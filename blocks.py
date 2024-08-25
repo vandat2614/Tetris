@@ -8,7 +8,7 @@ class LBlock(Block):
             [Position(0, 2), Position(1, 0), Position(1, 1), Position(1, 2)],
             [Position(0, 1), Position(1, 1), Position(2, 1), Position(2, 2)],
             [Position(1, 0), Position(1, 1), Position(1, 2), Position(2, 0)],
-            [Position(0, 0), Position(0, 1), Position(1, 1), Position(1, 2)]
+            [Position(0, 0), Position(0, 1), Position(1, 1), Position(2, 1)]
         ]
 
 class JBlock(Block):
@@ -28,7 +28,7 @@ class IBlock(Block):
             [Position(1, 0), Position(1, 1), Position(1, 2), Position(1, 3)],
             [Position(0, 2), Position(1, 2), Position(2, 2), Position(3, 2)],
             [Position(2, 0), Position(2, 1), Position(2, 2), Position(2, 3)],
-            [Position(1, 1), Position(2, 1), Position(3, 1), Position(4, 1)]
+            [Position(0, 1), Position(1, 1), Position(2, 1), Position(3, 1)]
         ]
 
 class OBlock(Block):
@@ -62,7 +62,7 @@ class TBlock(Block):
             [Position(0, 1), Position(1, 0), Position(1, 1), Position(2, 1)]
         ]
 
-class Zblock(Block):
+class ZBlock(Block):
     def __init__(self, cell_size):
         super().__init__(id=7, cell_size=cell_size)
         self.states = [
