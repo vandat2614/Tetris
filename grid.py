@@ -1,13 +1,13 @@
 import pygame
+from colors import Colors
 
 class  Grid:
-    def __init__(self, num_rows, num_cols, cell_size, cell_colors):
+    def __init__(self, num_rows, num_cols, cell_size):
         self.num_rows = num_rows
         self.num_cols = num_cols
         self.cell_size = cell_size
         self.grid = [[0] * num_cols for _ in range(num_rows)]
-        self.cell_colors = cell_colors
-        print(self.grid)
+        self.cell_colors = Colors.get_cell_colors()
 
     def draw(self, screen):
         for row in range(self.num_rows):
