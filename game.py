@@ -1,6 +1,7 @@
 import random
 from grid import Grid
 from blocks import *
+import pygame
 
 class Game:
     def __init__(self, ):
@@ -11,6 +12,10 @@ class Game:
         self.next_block = self.get_random_block()
         self.game_over = False
         self.score = 0
+        pygame.mixer.music.load('sounds\\background.mp3')
+        pygame.mixer.music.play(-1)
+        self.rotate_sound = pygame.mixer.Sound('sounds\\rotate.mp3')
+        self.clear_sound = pygame.mixer.Sound('sounds\\clear_row.wav')
 
     def reset_blocks(self):
         self.blocks = [IBlock(self.cell_size), JBlock(self.cell_size), LBlock(self.cell_size), OBlock(self.cell_size), SBlock(self.cell_size), TBlock(self.cell_size), ZBlock(self.cell_size)]
@@ -72,8 +77,11 @@ class Game:
         self.current_block.rotate()
         if not self.block_inside():
             self.current_block.undo_rotate()
+        else:
+            self.rotate_sound.play()
         if self.collision():
             self.lock_block()
+
 
     def lock_block(self):
         tiles = self.current_block.get_position()
@@ -82,9 +90,12 @@ class Game:
         self.current_block = self.next_block
         self.next_block = self.get_random_block()
         cleared_row = self.grid.clear_full_row()
-        self.update_score(row_cleared=cleared_row)
+        if cleared_row > 0:
+            self.clear_sound.play()
+            self.update_score(row_cleared=cleared_row)
 
         if not self.block_inside() or self.collision():
+            self.current_block.move(-1, 0)
             self.game_over = True
 
     def block_inside(self):
