@@ -3,16 +3,26 @@ from grid import Grid
 from blocks import *
 
 class Game:
-    def __init__(self, num_rows, num_cols, cell_size):
-        self.grid = Grid(num_rows, num_cols, cell_size)
-        self.cell_size = cell_size
+    def __init__(self, ):
+        self.grid = Grid()
+        self.cell_size = 30
         self.blocks = []
         self.current_block = self.get_random_block()
         self.next_block = self.get_random_block()
         self.game_over = False
+        self.score = 0
 
     def reset_blocks(self):
         self.blocks = [IBlock(self.cell_size), JBlock(self.cell_size), LBlock(self.cell_size), OBlock(self.cell_size), SBlock(self.cell_size), TBlock(self.cell_size), ZBlock(self.cell_size)]
+
+    def update_score(self, row_cleared=0, move_down_points=0):
+        if row_cleared == 1:
+            self.score += 100
+        elif row_cleared == 2:
+            self.score += 300
+        elif row_cleared > 0:
+            self.score += 500
+        self.score += move_down_points
 
     def get_random_block(self):
         if len(self.blocks) == 0: self.reset_blocks()
@@ -23,6 +33,12 @@ class Game:
     def draw(self, screen):
         self.grid.draw(screen)
         self.current_block.draw(screen)
+        if self.next_block.id == 4: # O block
+            offset_x, offset_y = 375, 275
+        elif self.next_block.id == 3: # I block
+            offset_x, offset_y = 350, 260
+        else: offset_x, offset_y = 360, 275
+        self.next_block.draw(screen, offset_x, offset_y)
 
     def reset(self):
         self.grid.reset()
@@ -30,6 +46,7 @@ class Game:
         self.current_block = self.get_random_block()
         self.next_block = self.get_random_block()
         self.game_over = False
+        self.score = 0
 
     def move_left(self):
         self.current_block.move(0, -1)
@@ -50,7 +67,7 @@ class Game:
         if not self.block_inside() or self.collision():
             self.current_block.move(-1, 0)
             self.lock_block()
-
+             
     def rotate(self):
         self.current_block.rotate()
         if not self.block_inside():
@@ -64,7 +81,8 @@ class Game:
             self.grid.grid[tile.row][tile.col] = self.current_block.id
         self.current_block = self.next_block
         self.next_block = self.get_random_block()
-        self.grid.clear_full_row()
+        cleared_row = self.grid.clear_full_row()
+        self.update_score(row_cleared=cleared_row)
 
         if not self.block_inside() or self.collision():
             self.game_over = True
