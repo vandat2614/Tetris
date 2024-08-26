@@ -1,6 +1,8 @@
 import pygame, sys
 from game import Game
 from colors import Colors
+from button import Button
+
 
 pygame.init()
 
@@ -21,25 +23,38 @@ game = Game()
 AUTO_DOWN_UPDATE = pygame.USEREVENT
 pygame.time.set_timer(AUTO_DOWN_UPDATE, 350)
 
+exit_button = Button(text='Exit', position=(410, 570), width=90, height=40)
+pause_button = Button(text='Pause', position=(310, 570), width=95, height=40)
+
+game_pause = False
+
+hand_cursor = pygame.cursors.Cursor(pygame.SYSTEM_CURSOR_HAND)
+default_cursor = pygame.cursors.Cursor(pygame.SYSTEM_CURSOR_ARROW)
+
 # event handling -> updating positions -> drawing objects
 while True:
+    
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
             sys.exit()
+    
         if event.type == pygame.KEYDOWN:
-            if game.game_over:
+            if event.key == pygame.K_r:
                 game.reset()
-            if event.key == pygame.K_UP and not game.game_over:
-                game.rotate()
-            elif event.key == pygame.K_DOWN and not game.game_over:
-                game.move_down()
-                game.update_score(move_down_points=1)
-            elif event.key == pygame.K_LEFT and not game.game_over:
-                game.move_left()
-            elif event.key == pygame.K_RIGHT and not game.game_over:
-                game.move_right()
-        if event.type == AUTO_DOWN_UPDATE and not game.game_over:
+            
+            if not game.game_over and not game_pause:
+                if event.key == pygame.K_UP:
+                    game.rotate()
+                elif event.key == pygame.K_DOWN:
+                    game.move_down()
+                    game.update_score(move_down_points=1)
+                elif event.key == pygame.K_LEFT:
+                    game.move_left()
+                elif event.key == pygame.K_RIGHT:
+                    game.move_right()
+    
+        if event.type == AUTO_DOWN_UPDATE and not game.game_over and not game_pause:
             game.move_down()
 
     screen.fill(Colors.DARK_BLUE)   
@@ -52,9 +67,27 @@ while True:
 
     screen.blit(next_surface, (375, 180, 50, 50))
     pygame.draw.rect(screen, Colors.LIGHT_BLUE, next_rect, 0, 10)
+
+    pause_button.draw(screen)
+    exit_button.draw(screen)
     
     if game.game_over:
         screen.blit(game_over_surface, (320, 450, 50, 50))
+
+    if exit_button.is_hovered() or pause_button.is_hovered():
+        pygame.mouse.set_cursor(hand_cursor)
+    else: pygame.mouse.set_cursor(default_cursor)
+
+
+    if exit_button.is_clicked():
+        pygame.quit()
+        sys.exit()
+
+    if pause_button.is_clicked():
+        if game_pause:
+            pause_button.change_text('Pause')
+        else: pause_button.change_text('Continue')
+        game_pause = not game_pause
 
     game.draw(screen)
 
