@@ -2,12 +2,7 @@ import pygame
 from colors import Colors
 
 class Button:
-    def __init__(self, text, position, width, height):
-        self.position = position
-        self.width = width
-        self.height = height
-        self.text = text
-        
+    def __init__(self, text, position, width, height):        
         self.rect = pygame.Rect(position[0], position[1], width, height)
         
         self.font = pygame.font.SysFont(None, 30)

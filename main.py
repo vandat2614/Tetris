@@ -2,7 +2,7 @@ import pygame, sys
 from game import Game
 from colors import Colors
 from button import Button
-
+from watch import Watch
 
 pygame.init()
 
@@ -12,7 +12,7 @@ next_surface = title_font.render('Next', True, Colors.WHITE)
 game_over_surface = title_font.render('GAME OVER', True, Colors.WHITE)
 
 score_rect = pygame.Rect(320, 55, 170, 60)
-next_rect = pygame.Rect(320, 215, 170, 180)
+next_rect = pygame.Rect(320, 195, 170, 180)
 
 screen = pygame.display.set_mode(size=(500, 620))
 pygame.display.set_caption('Tetris')
@@ -31,6 +31,9 @@ game_pause = False
 hand_cursor = pygame.cursors.Cursor(pygame.SYSTEM_CURSOR_HAND)
 default_cursor = pygame.cursors.Cursor(pygame.SYSTEM_CURSOR_ARROW)
 
+watch = Watch((320, 400), width=170, height=50)
+watch.start()
+
 # event handling -> updating positions -> drawing objects
 while True:
     
@@ -42,6 +45,8 @@ while True:
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_r:
                 game.reset()
+                watch.reset()
+                watch.start()
             
             if not game.game_over and not game_pause:
                 if event.key == pygame.K_UP:
@@ -65,14 +70,17 @@ while True:
     score_value_surface = title_font.render(str(game.score), True, Colors.RED)
     screen.blit(score_value_surface, score_value_surface.get_rect(centerx=score_rect.centerx, centery=score_rect.centery))
 
-    screen.blit(next_surface, (375, 180, 50, 50))
+    screen.blit(next_surface, (375, 160, 50, 50))
     pygame.draw.rect(screen, Colors.LIGHT_BLUE, next_rect, 0, 10)
 
     pause_button.draw(screen)
     exit_button.draw(screen)
-    
+    watch.draw(screen)
+    watch.update()
+
     if game.game_over:
-        screen.blit(game_over_surface, (320, 450, 50, 50))
+        screen.blit(game_over_surface, (320, 500, 50, 50))
+        watch.stop()
 
     if exit_button.is_hovered() or pause_button.is_hovered():
         pygame.mouse.set_cursor(hand_cursor)
@@ -86,7 +94,10 @@ while True:
     if pause_button.is_clicked():
         if game_pause:
             pause_button.change_text('Pause')
-        else: pause_button.change_text('Continue')
+            watch.start()
+        else:
+            pause_button.change_text('Continue')
+            watch.stop()
         game_pause = not game_pause
 
     game.draw(screen)
