@@ -18,6 +18,9 @@ screen = pygame.display.set_mode(size=(500, 620))
 pygame.display.set_caption('Tetris')
 clock = pygame.time.Clock()
 
+icon = pygame.image.load('Graphics\\icon_in.png')
+pygame.display.set_icon(icon)  
+
 game = Game()
 
 AUTO_DOWN_UPDATE = pygame.USEREVENT
