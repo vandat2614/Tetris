@@ -12,10 +12,18 @@ class Game:
         self.next_block = self.get_random_block()
         self.game_over = False
         self.score = 0
-        pygame.mixer.music.load('sounds\\background.mp3')
-        pygame.mixer.music.play(-1)
-        self.rotate_sound = pygame.mixer.Sound('sounds\\rotate.mp3')
-        self.clear_sound = pygame.mixer.Sound('sounds\\clear_row.wav')
+        pygame.mixer.music.load('Sounds\\background.mp3')
+        self.duration = 0
+        self.play_music()
+        self.rotate_sound = pygame.mixer.Sound('Sounds\\rotate.mp3')
+        self.clear_sound = pygame.mixer.Sound('Sounds\\clear_row.wav')
+
+    def play_music(self):
+        pygame.mixer.music.play(-1, self.duration)
+
+    def stop_music(self):
+        self.duration += pygame.mixer.music.get_pos() / 1000.0
+        pygame.mixer.music.stop()
 
     def reset_blocks(self):
         self.blocks = [IBlock(self.cell_size), JBlock(self.cell_size), LBlock(self.cell_size), OBlock(self.cell_size), SBlock(self.cell_size), TBlock(self.cell_size), ZBlock(self.cell_size)]

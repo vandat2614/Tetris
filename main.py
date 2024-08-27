@@ -23,13 +23,17 @@ game = Game()
 AUTO_DOWN_UPDATE = pygame.USEREVENT
 pygame.time.set_timer(AUTO_DOWN_UPDATE, 350)
 
-exit_button = Button(text='Exit', position=(410, 570), width=90, height=40)
-pause_button = Button(text='Pause', position=(310, 570), width=95, height=40)
 
+pause_button = Button(position=(320, 568), width=120, height=40)
+pause_button.config(text='Pause')
 game_pause = False
 
 hand_cursor = pygame.cursors.Cursor(pygame.SYSTEM_CURSOR_HAND)
 default_cursor = pygame.cursors.Cursor(pygame.SYSTEM_CURSOR_ARROW)
+
+volume_button = Button(position=(445, 560), width=50, height=50)
+volume_button.config(image_path='Graphics\\volume.png', scale_factor=0.3)
+mute = False
 
 watch = Watch((320, 400), width=170, height=50)
 watch.start()
@@ -67,33 +71,29 @@ while True:
     screen.blit(score_surface, (365, 20, 50, 50))
     pygame.draw.rect(screen, Colors.LIGHT_BLUE, score_rect, 0, 10)
 
-    score_value_surface = title_font.render(str(game.score), True, Colors.RED)
+    score_value_surface = title_font.render(str(game.score), True, Colors.CYAN)
     screen.blit(score_value_surface, score_value_surface.get_rect(centerx=score_rect.centerx, centery=score_rect.centery))
 
     screen.blit(next_surface, (375, 160, 50, 50))
     pygame.draw.rect(screen, Colors.LIGHT_BLUE, next_rect, 0, 10)
 
     pause_button.draw(screen)
-    exit_button.draw(screen)
+    volume_button.draw(screen, Colors.DARK_BLUE)
     watch.draw(screen)
     watch.update()
 
-    if exit_button.is_hovered() or pause_button.is_hovered():
+    if pause_button.is_hovered() or volume_button.is_hovered():
         pygame.mouse.set_cursor(hand_cursor)
     else: pygame.mouse.set_cursor(default_cursor)
-
-    if exit_button.is_clicked():
-        pygame.quit()
-        sys.exit()
 
     if game.game_over:
         screen.blit(game_over_surface, (320, 500, 50, 50))
         watch.stop()
-        pause_button.change_text('Play again')
+        pause_button.config(text='Play again')
 
     if pause_button.is_clicked():
         if game.game_over:
-            pause_button.change_text('Pause')
+            pause_button.config(text='Pause')
             game.reset()
             game_pause = False
 
@@ -101,12 +101,21 @@ while True:
             watch.start()
         else:
             if game_pause:
-                pause_button.change_text('Pause')
+                pause_button.config(text='Pause')
                 watch.start()
             else:
-                pause_button.change_text('Continue')
+                pause_button.config(text='Continue')
                 watch.stop()
             game_pause = not game_pause
+
+    if volume_button.is_clicked():
+        mute = not mute
+        if mute:
+            game.stop_music()
+            volume_button.config(image_path='Graphics\\mute.png', scale_factor=0.3)
+        else: 
+            game.play_music()
+            volume_button.config(image_path='Graphics\\volume.png', scale_factor=0.3)
 
     game.draw(screen)
 
