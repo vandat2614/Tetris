@@ -5,7 +5,7 @@ class Button:
     def __init__(self, text, position, width, height):        
         self.rect = pygame.Rect(position[0], position[1], width, height)
         
-        self.font = pygame.font.SysFont(None, 30)
+        self.font = pygame.font.SysFont(None, 25)
         self.text_surface = self.font.render(text, True, Colors.WHITE)
         self.text_rect = self.text_surface.get_rect(center=self.rect.center)
 

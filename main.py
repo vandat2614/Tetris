@@ -12,7 +12,7 @@ next_surface = title_font.render('Next', True, Colors.WHITE)
 game_over_surface = title_font.render('GAME OVER', True, Colors.WHITE)
 
 score_rect = pygame.Rect(320, 55, 170, 60)
-next_rect = pygame.Rect(320, 195, 170, 180)
+next_rect = pygame.Rect(320, 195, 170, 170)
 
 screen = pygame.display.set_mode(size=(500, 620))
 pygame.display.set_caption('Tetris')
@@ -78,27 +78,35 @@ while True:
     watch.draw(screen)
     watch.update()
 
-    if game.game_over:
-        screen.blit(game_over_surface, (320, 500, 50, 50))
-        watch.stop()
-
     if exit_button.is_hovered() or pause_button.is_hovered():
         pygame.mouse.set_cursor(hand_cursor)
     else: pygame.mouse.set_cursor(default_cursor)
-
 
     if exit_button.is_clicked():
         pygame.quit()
         sys.exit()
 
+    if game.game_over:
+        screen.blit(game_over_surface, (320, 500, 50, 50))
+        watch.stop()
+        pause_button.change_text('Play again')
+
     if pause_button.is_clicked():
-        if game_pause:
+        if game.game_over:
             pause_button.change_text('Pause')
+            game.reset()
+            game_pause = False
+
+            watch.reset()
             watch.start()
         else:
-            pause_button.change_text('Continue')
-            watch.stop()
-        game_pause = not game_pause
+            if game_pause:
+                pause_button.change_text('Pause')
+                watch.start()
+            else:
+                pause_button.change_text('Continue')
+                watch.stop()
+            game_pause = not game_pause
 
     game.draw(screen)
 

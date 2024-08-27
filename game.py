@@ -13,7 +13,7 @@ class Game:
         self.game_over = False
         self.score = 0
         pygame.mixer.music.load('sounds\\background.mp3')
-        # pygame.mixer.music.play(-1)
+        pygame.mixer.music.play(-1)
         self.rotate_sound = pygame.mixer.Sound('sounds\\rotate.mp3')
         self.clear_sound = pygame.mixer.Sound('sounds\\clear_row.wav')
 
@@ -22,27 +22,35 @@ class Game:
 
     def update_score(self, row_cleared=0, move_down_points=0):
         if row_cleared == 1:
-            self.score += 100
+            self.score += 40
         elif row_cleared == 2:
+            self.score += 100
+        elif row_cleared == 3:
             self.score += 300
-        elif row_cleared > 0:
-            self.score += 500
+        elif row_cleared == 4:
+            self.score += 1200
         self.score += move_down_points
 
     def get_random_block(self):
         if len(self.blocks) == 0: self.reset_blocks()
         block = random.choice(self.blocks)
         self.blocks.remove(block)
+        self.move_block_center(block)
         return block
     
+    def move_block_center(self, block):
+        if block.id == 4:
+            block.move(0, 4)
+        else: block.move(0, 3)
+
     def draw(self, screen):
         self.grid.draw(screen)
         self.current_block.draw(screen)
         if self.next_block.id == 4: # O block
-            offset_x, offset_y = 375, 275
+            offset_x, offset_y = 255, 275
         elif self.next_block.id == 3: # I block
-            offset_x, offset_y = 350, 260
-        else: offset_x, offset_y = 360, 275
+            offset_x, offset_y = 255, 260
+        else: offset_x, offset_y = 270, 275
         self.next_block.draw(screen, offset_x, offset_y)
 
     def reset(self):
@@ -55,14 +63,14 @@ class Game:
 
     def move_left(self):
         self.current_block.move(0, -1)
-        if not self.block_inside():
+        if not self.block_inside() or self.collision():
             self.current_block.move(0, 1)
         if self.collision():
             self.lock_block()
 
     def move_right(self):
         self.current_block.move(0, 1)
-        if not self.block_inside():
+        if not self.block_inside() or self.collision():
             self.current_block.move(0, -1)
         if self.collision():
             self.lock_block()
@@ -75,7 +83,7 @@ class Game:
              
     def rotate(self):
         self.current_block.rotate()
-        if not self.block_inside():
+        if not self.block_inside() or self.collision():
             self.current_block.undo_rotate()
         else:
             self.rotate_sound.play()
